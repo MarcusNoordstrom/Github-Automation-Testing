@@ -1,0 +1,101 @@
+name: Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    
+jobs:
+  build:
+    name: Build
+    runs-on: windows-latest
+    env:
+      shell: cmd
+      run: .\Build.bat
+
+#name: Build
+
+#on:
+  # Allow users to trigger workflow manually via GitHub UI
+ # workflow_dispatch:
+
+ # push:
+    # Always build when there are new commits to master
+ #   branches:
+ #     - master
+
+    # Always build release-tags
+ #   tags:
+ #     - 'releases/**'
+
+  #avoid-concurrent-invocations:
+    #timeout-minutes: 240
+    #runs-on: ubuntu-latest
+    #steps:
+    #  - name: Turnstyle
+    #    uses: softprops/turnstyle@v1
+    #    env:
+    #      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  #start-agents:
+    #needs: [ avoid-concurrent-invocations ]
+    #name: "Start build agents"
+    #runs-on: ubuntu-latest
+    #steps:
+    #  - run: curl ${{ secrets.WATCHDOG_TRIGGER_URL }}
+
+  #build-win64:
+    #needs: [ avoid-concurrent-invocations ]
+  #  name: "Build for Win64"
+
+  #  runs-on: windows
+
+    #timeout-minutes: 120
+
+  #  steps:
+    
+    #  - name: Check out repository
+    #    uses: actions/checkout@v2
+    #    with:
+    #      clean: false
+
+    #  - name: Setup credentials for cloud storage
+    #    run: $env:GCP_GAME_BUILD_AGENT_CREDENTIALS | Out-File UpdateUE4\service-account-credentials.json -Encoding ASCII
+    #    env:
+    #      GCP_GAME_BUILD_AGENT_CREDENTIALS: ${{ secrets.GCP_GAME_BUILD_AGENT_CREDENTIALS }}
+
+    #  - name: Update UE4
+    #    run: .\UpdateUE4\UpdateUE4.ps1 -CloudStorageBucket ${{ secrets.ENGINE_STORAGE_BUCKET_NAME }}
+
+    #  - name: Build game (Win64)
+    #    run: .\BuildGame.bat
+
+    #  - name: Setup credentials for cloud storage
+    #    run: $env:GCP_GAME_BUILD_AGENT_CREDENTIALS | Out-File UploadGame\service-account-credentials.json -Encoding ASCII
+    #    env:
+    #      GCP_GAME_BUILD_AGENT_CREDENTIALS: ${{ secrets.GCP_GAME_BUILD_AGENT_CREDENTIALS }}
+
+    #  - name: Upload game as game-${{ github.sha }}-win64
+    #    run: .\UploadGame\UploadGame.ps1 -Version game-${{ github.sha }}-win64 -CloudStorageBucket ${{ secrets.GAME_STORAGE_BUCKET_NAME }}
+
+    #  - name: find build logs
+    #    id: find_build_logs
+    #    if: ${{ always() }}
+    #    run: |
+    #      . .\Scripts\Windows\Get-AutomationToolLogsLocation.ps1
+    #      $AutomationToolLogsLocation = Get-AutomationToolLogsLocation -UE4Location (Resolve-Path .\UE4)
+    #      Write-Host "::set-output name=automationtool_logs_location::${AutomationToolLogsLocation}"
+    #  - name: upload build logs
+    #    if: ${{ always() }}
+    #    uses: actions/upload-artifact@v2
+    #    with:
+    #      name: automationtool-logs
+    #      path: ${{ steps.find_build_logs.outputs.automationtool_logs_location }}
+
+  #stop-agents:
+  #  needs: [ build-win64 ]
+  #  name: "Stop build agents"
+  #  if: ${{ always() }}
+  #  runs-on: ubuntu-latest
+  #  steps:
+  #    - run: curl ${{ secrets.WATCHDOG_TRIGGER_URL }}
